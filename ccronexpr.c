@@ -462,7 +462,11 @@ static void FieldWrapper(ParserContext* context, int field_type, int min, int ma
 
 static void Fields(ParserContext* context, int len) {
     token_next(context);
+#ifndef CRON_SIX_PARTs_OMITS_SECONDS
     if (len < 6) cron_set_bit(context->target->seconds, 0);
+#else
+    if (len < 7) cron_set_bit(context->target->seconds, 0);
+#endif
     else {
         FieldWrapper(context, CRON_CF_SECOND,   0, CRON_MAX_SECONDS,          0, context->target->seconds);
         TOKEN_COMPARE(context, T_WS);
@@ -477,7 +481,11 @@ static void Fields(ParserContext* context, int len) {
     TOKEN_COMPARE(context, T_WS);
     FieldWrapper(context, CRON_CF_DAY_OF_WEEK,  0, CRON_MAX_DAYS_OF_WEEK + 1, 0, context->target->days_of_week);
 #ifndef CRON_DISABLE_YEARS
+#ifndef CRON_SIX_PARTs_OMITS_SECONDS
     if (len < 7) cron_set_bit(context->target->years, EXPR_YEARS_LENGTH*8-1);
+#else
+    if (len < 6) cron_set_bit(context->target->years, EXPR_YEARS_LENGTH*8-1);
+#endif
     else {
         TOKEN_COMPARE(context, T_WS);
         FieldWrapper(context, CRON_CF_YEAR, CRON_MIN_YEARS, CRON_MAX_YEARS, -CRON_MIN_YEARS, context->target->years);
